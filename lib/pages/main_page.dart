@@ -39,6 +39,8 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         mycollection = collection;
       });
+    } else {
+      mycollection = Collection([]);
     }
   }
 
@@ -53,7 +55,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.amber,
-        title: const Text('Bee Creative'),
+        title: const Row(children: [Icon(Icons.hive), Text('Bee Creative')]),
         actions: const <Widget>[
           IconButton(onPressed: null, icon: Icon(Icons.filter_vintage))
         ],
@@ -86,7 +88,9 @@ class _MainPageState extends State<MainPage> {
       ),
       body: <Widget>[
         /// Home page
-        const ImageGenerationPage(),
+        ImageGenerationPage(
+          addCreationToCollection: addNewCreation,
+        ),
 
         //History page,
         HistoryPage(

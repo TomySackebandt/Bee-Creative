@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class HistoryPage extends StatefulWidget {
   final Collection? mycollection;
 
-  const HistoryPage({this.mycollection});
+  const HistoryPage({super.key, this.mycollection});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -14,7 +14,7 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
-    return widget.mycollection != null
+    return widget.mycollection != null || widget.mycollection?.creations != []
         ? GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, // Number of columns
@@ -28,7 +28,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
               return CreationCard(
                   creation: creation,
-                  imageUrl: "https://placehold.co/600x400.png");
+                  imageUrl:
+                      "https://image.pollinations.ai/prompt/${creation.prompt}?model=${creation.model}&seed=${creation.seed}&width=${creation.width}&height=${creation.height}&nologo=true&private=true&enhance=false");
             },
           )
         : const Text("No creations found");

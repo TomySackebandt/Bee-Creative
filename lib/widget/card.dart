@@ -5,7 +5,8 @@ class CreationCard extends StatefulWidget {
   final Creation creation;
   final String imageUrl;
 
-  CreationCard({required this.creation, required this.imageUrl});
+  const CreationCard(
+      {super.key, required this.creation, required this.imageUrl});
 
   @override
   _CreationCardState createState() => _CreationCardState();
@@ -16,9 +17,17 @@ class _CreationCardState extends State<CreationCard> {
   Widget build(BuildContext context) {
     return Card(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Image.network(widget.imageUrl ?? "https://placehold.co/600x400"),
-          Text(widget.creation.name),
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Image.network(
+              widget.imageUrl ?? "https://placehold.co/600x400",
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+              '${widget.creation.creationDate.day.toString().padLeft(2, '0')}-${widget.creation.creationDate.month.toString().padLeft(2, '0')}-${widget.creation.creationDate.year}'),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ElevatedButton(
               onPressed: () {
@@ -29,7 +38,7 @@ class _CreationCardState extends State<CreationCard> {
                   },
                 );
               },
-              child: Icon(Icons.info),
+              child: const Icon(Icons.info),
             ),
             ElevatedButton(
               onPressed: () {
@@ -40,11 +49,9 @@ class _CreationCardState extends State<CreationCard> {
                   },
                 );
               },
-              child: Icon(Icons.restart_alt),
+              child: const Icon(Icons.restart_alt),
             ),
           ]),
-          Text(
-              '${widget.creation.creationDate.day.toString().padLeft(2, '0')}-${widget.creation.creationDate.month.toString().padLeft(2, '0')}-${widget.creation.creationDate.year}')
         ],
       ),
     );
@@ -54,7 +61,7 @@ class _CreationCardState extends State<CreationCard> {
 class CreationDetailsDialog extends StatelessWidget {
   final Creation creation;
 
-  CreationDetailsDialog({required this.creation});
+  const CreationDetailsDialog({super.key, required this.creation});
 
   @override
   Widget build(BuildContext context) {
@@ -70,12 +77,12 @@ class CreationDetailsDialog extends StatelessWidget {
             Text('Width: ${creation.width}'),
             Text('Seed: ${creation.seed}'),
             Text('Creation Date: ${creation.creationDate.toString()}'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         ),
