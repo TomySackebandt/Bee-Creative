@@ -1,9 +1,13 @@
-import 'package:bee_creative/models/creation.dart';
-import 'package:bee_creative/widget/divider_with_text.dart';
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math';
+
+import 'package:bee_creative/models/creation.dart';
+import 'package:bee_creative/widget/divider_with_text.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class ImageGenerationPage extends StatefulWidget {
   final Function addCreationToCollection;
@@ -17,6 +21,8 @@ class ImageGenerationPage extends StatefulWidget {
 class _ImageGenerationPageState extends State<ImageGenerationPage> {
   final TextEditingController promptController = TextEditingController();
   final TextEditingController seedController = TextEditingController();
+
+  final dateFolder = DateTime.now();
 
   int imageSizeSelect = 0;
   int _maxLines = 2;
@@ -39,7 +45,8 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
 
   String modelSelected = "flux";
   String imageUrl = "";
-  int randomSeed = Random().nextInt(1000000000);
+
+  int randomSeed = Random().nextInt(1000000000); //random seed
 
   Map<String, int> imageSize = {'width': 720, 'height': 1080};
 
@@ -50,6 +57,9 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
   void generateImage() async {
     setState(() {
       isLoading = true;
+      if (isSeedRandom) {
+        randomSeed = Random().nextInt(1000000000);
+      }
     });
 
     String tmpImageUrl = generateImageUrl();
@@ -57,21 +67,9 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
     try {
       final response = await http.get(Uri.parse(tmpImageUrl));
       if (response.statusCode == 200) {
-        // Trigger a rebuild to show the image
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Image generated')),
-        );
         setState(() {
           imageUrl = tmpImageUrl;
         });
-        widget.addCreationToCollection(Creation(
-            promptController.text.substring(0, 5),
-            promptController.text,
-            modelSelected,
-            imageSize["height"]!,
-            imageSize['width']!,
-            randomSeed,
-            DateTime.now()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to generate image')),
@@ -85,7 +83,58 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
       // Set loading state to false
       setState(() {
         isLoading = false;
+        tmpImageUrl = "";
       });
+    }
+  }
+
+  void saveImageLocal() async {
+    if (promptController.text == "") {
+      return; // Prevent saving without a generated image
+    }
+
+    final folderNameUniq =
+        "${dateFolder.day}_${dateFolder.month}_${dateFolder.year}-${dateFolder.hour}-${dateFolder.minute}-${dateFolder.second}";
+
+    try {
+      var response = await http.get(Uri.parse(imageUrl));
+
+      Directory documentDirectory = Directory("");
+
+      if (Platform.isAndroid) {
+        documentDirectory = Directory(
+            '/storage/emulated/0/Download/GeneratedImages/$folderNameUniq');
+      } else if (Platform.isLinux) {
+        documentDirectory = Directory(
+            '${Platform.environment['HOME']}/Download/GeneratedImages/$folderNameUniq');
+      }
+
+      // Create the directory if it doesn't exist
+      if (!await documentDirectory.exists()) {
+        await documentDirectory.create(recursive: true);
+      }
+
+      File file = File(
+          "${documentDirectory.path}/${promptController.text.substring(0, 3).trim()}${seed}_${Random().nextInt(1000000)}.jpg");
+      await file.writeAsBytes(response.bodyBytes);
+
+      widget.addCreationToCollection(Creation(
+          promptController.text.substring(0, 5),
+          promptController.text,
+          modelSelected,
+          file.path,
+          imageSize["height"]!,
+          imageSize['width']!,
+          randomSeed,
+          DateTime.now()));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Image saved')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save image $e')),
+      );
     }
   }
 
@@ -104,22 +153,33 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
                     height: MediaQuery.of(context).size.height / 2,
                   )
                 : SizedBox(
-                    child: Center(
-                        child: const CircularProgressIndicator(
+                    height: MediaQuery.of(context).size.height / 2,
+                    child: const Center(
+                        child: CircularProgressIndicator(
                       color: Colors.amber,
-                    )),
-                    height: MediaQuery.of(context).size.height / 2),
-            TextButton.icon(
-                onPressed: () {
-                  generateImage();
-                },
-                style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.amber)),
-                label: const Text(
-                  "Generate",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                icon: const Icon(Icons.emoji_nature)),
+                    ))),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              TextButton.icon(
+                  onPressed: () {
+                    generateImage();
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.amber)),
+                  label: const Text(
+                    "Generate",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  icon: const Icon(Icons.emoji_nature)),
+              IconButton(
+                  onPressed: (imageUrl != "" &&
+                          !isLoading &&
+                          promptController.text != "")
+                      ? saveImageLocal
+                      : null,
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.amber)),
+                  icon: const Icon(Icons.save)),
+            ]),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(

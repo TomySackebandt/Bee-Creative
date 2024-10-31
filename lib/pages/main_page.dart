@@ -86,20 +86,21 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
-      body: <Widget>[
-        /// Home page
-        ImageGenerationPage(
-          addCreationToCollection: addNewCreation,
-        ),
+      body: IndexedStack(
+        index: currentPageIndex,
+        children: [
+          /// Home page
+          ImageGenerationPage(addCreationToCollection: addNewCreation),
 
-        //History page,
-        HistoryPage(
-          mycollection: mycollection,
-        ),
+          //History page,
+          HistoryPage(
+            mycollection: mycollection,
+          ),
 
-        /// Notifications page
-        const Placeholder(),
-      ][currentPageIndex],
+          /// Notifications page
+          const Placeholder(),
+        ],
+      ),
     );
   }
 }
