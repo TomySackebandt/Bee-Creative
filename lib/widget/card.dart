@@ -53,6 +53,7 @@ class CreationDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.amber,
         title: const Text('Creation Details'),
       ),
       body: Padding(
@@ -70,10 +71,12 @@ class CreationDetailsPage extends StatelessWidget {
             SelectableText('Height: ${creation.height}'),
             SelectableText('Width: ${creation.width}'),
             SelectableText('Seed: ${creation.seed}'),
+            Text('Path: ${creation.filePath}'),
             Text('Creation Date: ${creation.creationDate.toString()}'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 Navigator.of(context).pop();
               },
               child: const Text('Close'),

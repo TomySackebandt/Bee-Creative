@@ -3,6 +3,7 @@ import 'package:bee_creative/models/collection.dart';
 import 'package:bee_creative/models/creation.dart';
 import 'package:bee_creative/pages/history.dart';
 import 'package:bee_creative/pages/image_generation.dart';
+import 'package:bee_creative/pages/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -56,8 +57,15 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         backgroundColor: Colors.amber,
         title: const Row(children: [Icon(Icons.hive), Text('Bee Creative')]),
-        actions: const <Widget>[
-          IconButton(onPressed: null, icon: Icon(Icons.filter_vintage))
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingPage()),
+                );
+              },
+              icon: Icon(Icons.filter_vintage))
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -65,6 +73,8 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             currentPageIndex = index;
           });
+          FocusScope.of(context).unfocus();
+          FocusManager.instance.primaryFocus?.unfocus();
         },
         indicatorColor: Colors.amber,
         selectedIndex: currentPageIndex,
@@ -79,11 +89,11 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.calendar_month),
             label: 'History',
           ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.message_outlined),
-            icon: Icon(Icons.message),
-            label: 'Chat',
-          ),
+          // NavigationDestination(
+          //   selectedIcon: Icon(Icons.message_outlined),
+          //   icon: Icon(Icons.message),
+          //   label: 'Chat',
+          // ),
         ],
       ),
       body: IndexedStack(
@@ -98,7 +108,7 @@ class _MainPageState extends State<MainPage> {
           ),
 
           /// Notifications page
-          const Placeholder(),
+          // const Placeholder(),
         ],
       ),
     );

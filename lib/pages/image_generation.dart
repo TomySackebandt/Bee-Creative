@@ -19,6 +19,20 @@ class ImageGenerationPage extends StatefulWidget {
 }
 
 class _ImageGenerationPageState extends State<ImageGenerationPage> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.requestFocus();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   final TextEditingController promptController = TextEditingController();
   final TextEditingController seedController = TextEditingController();
 
@@ -183,8 +197,10 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                focusNode: _focusNode,
                 maxLines: _maxLines,
                 controller: promptController,
+                autofocus: false,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: 'Enter prompt',
