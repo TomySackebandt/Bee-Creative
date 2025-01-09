@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class CreationCard extends StatefulWidget {
   final Creation creation;
 
-  CreationCard({super.key, required this.creation});
+  const CreationCard({super.key, required this.creation});
 
   @override
   _CreationCardState createState() => _CreationCardState();

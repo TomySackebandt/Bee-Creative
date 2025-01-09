@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:bee_creative/models/creation.dart';
 import 'package:bee_creative/widget/divider_with_text.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 class ImageGenerationPage extends StatefulWidget {
   final Function addCreationToCollection;
@@ -45,6 +44,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
   bool isSeedRandom = true;
   bool isSizeEditable = false;
   bool isLoading = false;
+  bool isSafe = true;
 
   List<String> models = [
     "flux",
@@ -65,7 +65,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
   Map<String, int> imageSize = {'width': 720, 'height': 1080};
 
   String generateImageUrl() {
-    return "https://image.pollinations.ai/prompt/${promptController.text}?model=${modelSelected}&seed=${isSeedRandom ? "${randomSeed}" : seed}&width=${imageSize["width"]}&height=${imageSize["height"]}&nologo=true&private=true&enhance=false";
+    return "https://image.pollinations.ai/prompt/${promptController.text}?model=$modelSelected&seed=${isSeedRandom ? "$randomSeed" : seed}&width=${imageSize["width"]}&height=${imageSize["height"]}&safe=${isSafe}&nologo=true&private=true&enhance=false";
   }
 
   void generateImage() async {
@@ -77,6 +77,8 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
     });
 
     String tmpImageUrl = generateImageUrl();
+
+    print(tmpImageUrl);
 
     try {
       final response = await http.get(Uri.parse(tmpImageUrl));
@@ -143,7 +145,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
           DateTime.now()));
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Image saved')),
+        const SnackBar(content: Text('Image saved')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -264,6 +266,19 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
                             ),
                           ),
                         )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text("Safe ?"),
+                        Checkbox(
+                          value: isSafe,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isSafe = value ?? false;
+                            });
+                          },
+                        ),
                       ],
                     ),
                     DividerWithText(label: "Image Size"),
@@ -407,8 +422,8 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
                           value: modelSelected,
                           items: models.map((model) {
                             return DropdownMenuItem(
-                              child: Text(model),
                               value: model,
+                              child: Text(model),
                             );
                           }).toList(),
                           onChanged: (value) {

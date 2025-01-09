@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DividerWithText extends StatelessWidget {
   String label = "";
 
-  DividerWithText({required this.label});
+  DividerWithText({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {

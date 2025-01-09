@@ -65,7 +65,7 @@ class _MainPageState extends State<MainPage> {
                   MaterialPageRoute(builder: (context) => const SettingPage()),
                 );
               },
-              icon: Icon(Icons.filter_vintage))
+              icon: const Icon(Icons.filter_vintage))
         ],
       ),
       bottomNavigationBar: NavigationBar(

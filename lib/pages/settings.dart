@@ -15,6 +15,6 @@ class _SettingPageState extends State<SettingPage> {
           backgroundColor: Colors.amber,
           title: const Text('Creation Details'),
         ),
-        body: Column(children: [Text("Bla")]));
+        body: const Column(children: [Text("Bla")]));
   }
 }
