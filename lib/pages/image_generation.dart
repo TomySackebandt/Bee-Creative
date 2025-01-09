@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -33,6 +34,9 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
   }
 
   final TextEditingController promptController = TextEditingController();
+  final TextEditingController negativePromptController =
+      TextEditingController();
+
   final TextEditingController seedController = TextEditingController();
 
   final dateFolder = DateTime.now();
@@ -41,6 +45,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
   int _maxLines = 2;
   int seed = 0;
   bool _isExpanded = false;
+  bool _isNegativeExpanded = false;
   bool isSeedRandom = true;
   bool isSizeEditable = false;
   bool isLoading = false;
@@ -65,7 +70,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
   Map<String, int> imageSize = {'width': 720, 'height': 1080};
 
   String generateImageUrl() {
-    return "https://image.pollinations.ai/prompt/${promptController.text}?model=$modelSelected&seed=${isSeedRandom ? "$randomSeed" : seed}&width=${imageSize["width"]}&height=${imageSize["height"]}&safe=${isSafe}&nologo=true&private=true&enhance=false";
+    return "https://image.pollinations.ai/prompt/${promptController.text}?negative_prompt=${negativePromptController.text.isEmpty ? "worst quality, blurry" : negativePromptController.text}&model=$modelSelected&seed=${isSeedRandom ? "$randomSeed" : seed}&width=${imageSize["width"]}&height=${imageSize["height"]}&safe=$isSafe&nologo=true&private=true&nofeed=true&enhance=false";
   }
 
   void generateImage() async {
@@ -86,6 +91,16 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
         setState(() {
           imageUrl = tmpImageUrl;
         });
+      } else if (Map<String, dynamic>.from(
+              jsonDecode(response.body as String? ?? ''))['message'] ==
+          "NSFW content detected. This request cannot be fulfilled when safe mode is enabled.") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('NSFW detected')),
+        );
+      } else if (RegExp(r'^5\d\d$').hasMatch(response.statusCode.toString())) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error Server, try later')),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to generate image')),
@@ -202,7 +217,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
                 focusNode: _focusNode,
                 maxLines: _maxLines,
                 controller: promptController,
-                autofocus: false,
+                autofocus: true,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: 'Enter prompt',
@@ -219,6 +234,33 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
                     },
                     icon: Icon(
                         _isExpanded ? Icons.expand_less : Icons.expand_more),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                maxLines: _maxLines,
+                controller: negativePromptController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Enter negative prompt',
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (_isNegativeExpanded) {
+                          _maxLines = 2;
+                        } else {
+                          _maxLines = 5;
+                        }
+                        _isNegativeExpanded = !_isNegativeExpanded;
+                      });
+                    },
+                    icon: Icon(_isNegativeExpanded
+                        ? Icons.expand_less
+                        : Icons.expand_more),
                   ),
                 ),
               ),
