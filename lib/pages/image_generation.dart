@@ -70,7 +70,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
   Map<String, int> imageSize = {'width': 720, 'height': 1080};
 
   String generateImageUrl() {
-    return "https://image.pollinations.ai/prompt/${promptController.text}?negative_prompt=${negativePromptController.text.isEmpty ? "worst quality, blurry" : negativePromptController.text}&model=$modelSelected&seed=${isSeedRandom ? "$randomSeed" : seed}&width=${imageSize["width"]}&height=${imageSize["height"]}&safe=$isSafe&nologo=true&private=true&nofeed=true&enhance=false";
+    return "https://image.pollinations.ai/prompt/${Uri.encodeFull(promptController.text)}?negative_prompt=${negativePromptController.text.isEmpty ? "worst quality, blurry" : Uri.encodeFull(negativePromptController.text)}&model=$modelSelected&seed=${isSeedRandom ? "$randomSeed" : seed}&width=${imageSize["width"]}&height=${imageSize["height"]}&safe=$isSafe&nologo=true&private=true&nofeed=true&enhance=false";
   }
 
   void generateImage() async {
@@ -152,6 +152,7 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
       widget.addCreationToCollection(Creation(
           promptController.text.substring(0, 5),
           promptController.text,
+          negativePromptController.text,
           modelSelected,
           file.path,
           imageSize["height"]!,
@@ -194,8 +195,8 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
                   onPressed: () {
                     generateImage();
                   },
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.amber)),
+                  // style: ButtonStyle(
+                  //     backgroundColor: WidgetStateProperty.all( AdaptiveTheme.of(context).theme.appBarTheme.backgroundColor)),
                   label: const Text(
                     "Generate",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -207,8 +208,8 @@ class _ImageGenerationPageState extends State<ImageGenerationPage> {
                           promptController.text != "")
                       ? saveImageLocal
                       : null,
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.amber)),
+                  // style: ButtonStyle(
+                  //     backgroundColor: WidgetStateProperty.all(Colors.amber)),
                   icon: const Icon(Icons.save)),
             ]),
             Padding(

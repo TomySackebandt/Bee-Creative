@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 
 class SettingPage extends StatefulWidget {
@@ -12,9 +13,17 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.amber,
+          backgroundColor:
+              AdaptiveTheme.of(context).theme.appBarTheme.backgroundColor,
           title: const Text('Creation Details'),
         ),
-        body: const Column(children: [Text("Bla")]));
+        body: Column(children: [
+          Text("Change theme"),
+          IconButton(
+              onPressed: () {
+                AdaptiveTheme.of(context).toggleThemeMode();
+              },
+              icon: Icon(Icons.sunny))
+        ]));
   }
 }

@@ -6,6 +6,7 @@ import 'package:bee_creative/pages/image_generation.dart';
 import 'package:bee_creative/pages/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -55,7 +56,8 @@ class _MainPageState extends State<MainPage> {
     Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber,
+        backgroundColor:
+            AdaptiveTheme.of(context).theme.appBarTheme.backgroundColor,
         title: const Row(children: [Icon(Icons.hive), Text('Bee Creative')]),
         actions: <Widget>[
           IconButton(
@@ -76,7 +78,6 @@ class _MainPageState extends State<MainPage> {
           FocusScope.of(context).unfocus();
           FocusManager.instance.primaryFocus?.unfocus();
         },
-        indicatorColor: Colors.amber,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(

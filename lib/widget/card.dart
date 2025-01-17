@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:bee_creative/models/creation.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +54,8 @@ class CreationDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber,
+        backgroundColor:
+            AdaptiveTheme.of(context).theme.appBarTheme.backgroundColor,
         title: const Text('Creation Details'),
       ),
       body: Padding(
@@ -67,6 +69,7 @@ class CreationDetailsPage extends StatelessWidget {
               height: MediaQuery.of(context).size.height / 2,
             ),
             SelectableText('Prompt: ${creation.prompt}'),
+            SelectableText('Negative prompt: ${creation.negativePrompt}'),
             SelectableText('Model: ${creation.model}'),
             SelectableText('Height: ${creation.height}'),
             SelectableText('Width: ${creation.width}'),

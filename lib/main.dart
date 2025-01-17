@@ -1,25 +1,47 @@
 import 'package:bee_creative/pages/main_page.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final lightTheme = ThemeData(
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.amber,
+    ),
+    indicatorColor: Colors.amber,
+    useMaterial3: true,
+    brightness: Brightness.light,
+    colorSchemeSeed: Colors.amber,
+  );
+
+  final darkTheme = ThemeData(
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.deepPurple,
+    ),
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorSchemeSeed: Colors.deepPurple,
+  );
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Bee Creative',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
-        useMaterial3: true,
-      ),
-      home: const MainPage(),
-    );
+    return AdaptiveTheme(
+        light: lightTheme,
+        dark: darkTheme,
+        initial: AdaptiveThemeMode.light,
+        builder: (theme, darkTheme) => MaterialApp(
+              title: 'Bee Creative',
+              debugShowCheckedModeBanner: false,
+              theme: theme,
+              darkTheme: darkTheme,
+              home: const MainPage(),
+            ));
   }
 }
 
